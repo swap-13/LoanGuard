@@ -1,0 +1,27 @@
+# Java
+backend/target/
+backend/.mvn/
+*.class
+
+# Python
+ml-service/__pycache__/
+ml-service/model.pkl
+ml-service/*.pyc
+ml-service/venv/
+
+# React
+frontend/node_modules/
+frontend/build/
+
+# Environment
+.env
+application.properties
+
+# IDE
+.vscode/settings.json
+*.iml
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
