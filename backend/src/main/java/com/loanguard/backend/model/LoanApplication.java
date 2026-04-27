@@ -22,6 +22,12 @@ public class LoanApplication {
 
     @Column(name = "applicant_name", nullable = false)
     private String applicantName;
+    
+    // ✅ NEW FIELD - added for email notification feature
+    // nullable = true because old records in DB won't have this value
+    @Column(name = "applicant_email")
+    private String applicantEmail;
+
 
     @Column(nullable = false)
     private Integer age;

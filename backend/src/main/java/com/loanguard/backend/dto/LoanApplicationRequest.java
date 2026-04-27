@@ -18,6 +18,13 @@ public class LoanApplicationRequest {
     @Size(min = 2, max = 100, message = "Name must be between 2 and 100 characters")
     private String applicantName;
 
+    // ✅ NEW FIELD - added for email notification feature
+    // @Email checks format like "someone@domain.com"
+    // @NotBlank means the field cannot be empty
+    @NotBlank(message = "Email address is required")
+    @Email(message = "Please enter a valid email address")
+    private String applicantEmail;
+
     // Age must be between 21 and 65
     // Below 21 or above 65 is outside eligible range
     @NotNull(message = "Age is required")

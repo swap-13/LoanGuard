@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "BackendApplication",
+            "request": "launch",
+            "mainClass": "com.loanguard.backend.BackendApplication",
+            "projectName": "backend",
+            "env": {
+                "LOANGUARD_MAIL_USERNAME": "salunkeswapnil264@gmail.com",
+                "LOANGUARD_MAIL_PASSWORD": "bpxadmzediirugsc"
+            }
+        }
+    ]
+}

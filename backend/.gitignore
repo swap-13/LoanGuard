@@ -1,33 +1,118 @@
-HELP.md
-target/
-.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
+# ====================================================================
+# LoanGuard — .gitignore
+# Place this file at the ROOT of your project (LoanGuard/.gitignore)
+# ====================================================================
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
 
-### IntelliJ IDEA ###
-.idea
-*.iws
+# ====================================================================
+# SECURITY — Credentials and sensitive config (MOST IMPORTANT)
+# ====================================================================
+
+# Spring Boot config contains email/password references — keep off GitHub
+backend/src/main/resources/application.properties
+
+# VS Code launch config contains actual Gmail credentials directly
+.vscode/launch.json
+
+# Any .env files if you ever create them
+*.env
+.env
+.env.local
+
+
+# ====================================================================
+# JAVA / SPRING BOOT (backend)
+# ====================================================================
+
+# Maven build output folder — generated when you run the project
+backend/target/
+
+# Maven wrapper cache
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA files (if anyone uses IntelliJ)
 *.iml
+*.iws
 *.ipr
+.idea/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
+# Eclipse files (if anyone uses Eclipse)
+.classpath
+.project
+.settings/
+bin/
 
-### VS Code ###
-.vscode/
+# Compiled Java class files
+*.class
+
+# JAR and WAR files
+*.jar
+*.war
+
+
+# ====================================================================
+# PYTHON / FLASK (ml-service)
+# ====================================================================
+
+# Python virtual environment folder
+ml-service/venv/
+ml-service/env/
+ml-service/__pycache__/
+
+# Python compiled files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Trained model files — these can be large, regenerate by running train.py
+ml-service/*.pkl
+ml-service/*.joblib
+ml-service/*.h5
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+
+# ====================================================================
+# REACT / NODE (frontend)
+# ====================================================================
+
+# Node modules — extremely large folder, always reinstalled with npm install
+frontend/node_modules/
+
+# React production build output
+frontend/build/
+
+# npm and yarn logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# ====================================================================
+# OPERATING SYSTEM FILES
+# ====================================================================
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Mac
+.DS_Store
+.AppleDouble
+
+# Linux
+*~
+
+
+# ====================================================================
+# MISC
+# ====================================================================
+
+# Log files
+*.log
+logs/
+
+# VS Code settings are okay to push EXCEPT launch.json (already ignored above)
+# .vscode/ folder itself is not ignored — only launch.json inside it

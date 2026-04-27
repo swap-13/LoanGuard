@@ -36,6 +36,10 @@ public class FraudDetectionService {
     @Autowired
     private RestTemplate restTemplate;
 
+    // ✅ NEW - Inject the EmailService we just created
+    @Autowired
+    private EmailService emailService;
+
     @Value("${ml.service.url}")
     private String mlServiceUrl;
 
@@ -90,10 +94,33 @@ public class FraudDetectionService {
         fraudAnalysisRepository.save(analysis);
 
         // STEP 9: Save to audit log
+        String formattedDate = application.getSubmittedAt()
+                .format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm"));
         saveAuditLog(application, "APPLICATION_ANALYZED", "SYSTEM",
                 "Risk Score: " + riskScore + "% - Decision: " + decision);
 
-        // STEP 10: Return result to controller
+        // ✅ STEP 10 (NEW): Send result email to applicant
+        // We check if email is not blank before trying to send
+        // If email sending fails, the catch block in EmailService handles it
+        // silently — the applicant still sees their result on screen
+        if (application.getApplicantEmail() != null &&
+                !application.getApplicantEmail().isBlank()) {
+ 
+            emailService.sendResultEmail(
+                    application.getApplicantEmail(),  // to
+                    application.getApplicantName(),    // name for greeting
+                    application.getId(),               // application ID
+                    riskScore,                         // e.g. 72.50
+                    riskLevel,                         // LOW/MEDIUM/HIGH/CRITICAL
+                    decision,                          // AUTO_APPROVED etc.
+                    reasons,                           // list of reasons
+                    formattedDate                      // "21-04-2026 14:30"
+            );
+        }
+ 
+        
+
+        // STEP 11: Return result to controller
         return new FraudResultResponse(
                 application.getId(),
                 application.getApplicantName(),
@@ -312,6 +339,7 @@ public class FraudDetectionService {
     private LoanApplication saveApplication(LoanApplicationRequest req) {
         LoanApplication app = new LoanApplication();
         app.setApplicantName(req.getApplicantName());
+        app.setApplicantEmail(req.getApplicantEmail()); // ← ADD THIS LINE
         app.setAge(req.getAge());
         app.setGender(req.getGender());
         app.setAnnualIncome(req.getAnnualIncome());

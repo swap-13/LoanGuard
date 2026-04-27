@@ -3,20 +3,23 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { submitLoanApplication } from '../api/api';
 
-// LoanForm is the PUBLIC page - anyone can access
-// User fills loan details and submits
-// Now includes validation error display from Spring Boot
+// ====================================================================
+// FILE: frontend/src/pages/LoanForm.js
+// CHANGE: Added `applicantEmail` to the form state and the UI
+// WHERE:  Added between Full Name and Age in the form layout
+// WHY:    User types their email here → it gets sent to Spring Boot
+//         → Spring Boot emails them their result automatically
+// ====================================================================
+
 const LoanForm = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // validationErrors stores field specific errors from Spring Boot
-  // Example: { age: "Minimum age is 21 years", creditScore: "..." }
   const [validationErrors, setValidationErrors] = useState({});
 
   const [form, setForm] = useState({
     applicantName: '',
+    applicantEmail: '',   // ✅ NEW - added to form state
     age: '',
     gender: '',
     annualIncome: '',
@@ -30,7 +33,6 @@ const LoanForm = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    // Clear validation error for this field when user starts typing
     if (validationErrors[e.target.name]) {
       setValidationErrors({
         ...validationErrors,
@@ -47,11 +49,8 @@ const LoanForm = () => {
 
     try {
       const response = await submitLoanApplication(form);
-      // Navigate to result page and pass the result data
       navigate('/result', { state: { result: response.data } });
     } catch (err) {
-      // Check if it is a validation error (400) from Spring Boot
-      // Spring Boot sends back field name and error message
       if (err.response?.status === 400 && err.response?.data?.fields) {
         setValidationErrors(err.response.data.fields);
         setError('Please fix the errors below before submitting.');
@@ -64,8 +63,6 @@ const LoanForm = () => {
     }
   };
 
-  // Helper component to show error below each field
-  // Reused for every input field
   const FieldError = ({ field }) => {
     if (!validationErrors[field]) return null;
     return (
@@ -129,7 +126,9 @@ const LoanForm = () => {
 
           <form onSubmit={handleSubmit}>
 
-            {/* Row 1 - Name and Age */}
+            {/* Row 1 - Name and Email */}
+            {/* ✅ CHANGED: Was "Name and Age", now "Name and Email" */}
+            {/* Age moved to Row 2 together with Gender */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
@@ -151,6 +150,32 @@ const LoanForm = () => {
                 />
                 <FieldError field="applicantName" />
               </div>
+
+              {/* ✅ NEW EMAIL FIELD */}
+              <div>
+                <label className="form-label">Email Address *</label>
+                <input
+                  className="form-input"
+                  type="email"
+                  name="applicantEmail"
+                  placeholder="your@email.com"
+                  value={form.applicantEmail}
+                  onChange={handleChange}
+                  style={{
+                    borderColor: validationErrors.applicantEmail
+                      ? '#f87171' : undefined
+                  }}
+                />
+                <FieldError field="applicantEmail" />
+              </div>
+            </div>
+
+            {/* Row 2 - Age and Gender (was Row 2 before, same content) */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '20px', marginBottom: '20px'
+            }}>
               <div>
                 <label className="form-label">Age * (21-65)</label>
                 <input
@@ -167,14 +192,6 @@ const LoanForm = () => {
                 />
                 <FieldError field="age" />
               </div>
-            </div>
-
-            {/* Row 2 - Gender and Employment */}
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '20px', marginBottom: '20px'
-            }}>
               <div>
                 <label className="form-label">Gender</label>
                 <select
@@ -190,6 +207,14 @@ const LoanForm = () => {
                 </select>
                 <FieldError field="gender" />
               </div>
+            </div>
+
+            {/* Row 3 - Employment Type (was Row 2 right side) */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '20px', marginBottom: '20px'
+            }}>
               <div>
                 <label className="form-label">Employment Type *</label>
                 <select
@@ -210,9 +235,30 @@ const LoanForm = () => {
                 </select>
                 <FieldError field="employmentType" />
               </div>
+              <div>
+                <label className="form-label">Loan Purpose *</label>
+                <select
+                  className="form-input"
+                  name="loanPurpose"
+                  value={form.loanPurpose}
+                  onChange={handleChange}
+                  style={{
+                    borderColor: validationErrors.loanPurpose
+                      ? '#f87171' : undefined
+                  }}
+                >
+                  <option value="">Select purpose</option>
+                  <option value="HOME">Home Purchase</option>
+                  <option value="EDUCATION">Education</option>
+                  <option value="VEHICLE">Vehicle</option>
+                  <option value="PERSONAL">Personal</option>
+                  <option value="BUSINESS">Business</option>
+                </select>
+                <FieldError field="loanPurpose" />
+              </div>
             </div>
 
-            {/* Row 3 - Income and Loan Amount */}
+            {/* Row 4 - Income and Loan Amount */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
@@ -252,7 +298,7 @@ const LoanForm = () => {
               </div>
             </div>
 
-            {/* Row 4 - Tenure and Credit Score */}
+            {/* Row 5 - Tenure and Credit Score */}
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
@@ -296,49 +342,36 @@ const LoanForm = () => {
               </div>
             </div>
 
-            {/* Row 5 - Existing Debt and Purpose */}
+            {/* Row 6 - Existing Debt (full width) */}
+            <div style={{ marginBottom: '32px' }}>
+              <label className="form-label">Existing Debt (₹)</label>
+              <input
+                className="form-input"
+                type="number"
+                name="existingDebt"
+                placeholder="0 if none"
+                value={form.existingDebt}
+                onChange={handleChange}
+                style={{
+                  borderColor: validationErrors.existingDebt
+                    ? '#f87171' : undefined
+                }}
+              />
+              <FieldError field="existingDebt" />
+            </div>
+
+            {/* Info note about email */}
+            {/* ✅ NEW - tells user why we're collecting their email */}
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '20px', marginBottom: '32px'
+              background: 'rgba(233, 69, 96, 0.05)',
+              border: '1px solid rgba(233, 69, 96, 0.2)',
+              borderRadius: '8px',
+              padding: '10px 14px',
+              marginBottom: '24px',
+              color: '#94a3b8',
+              fontSize: '0.82rem'
             }}>
-              <div>
-                <label className="form-label">Existing Debt (₹)</label>
-                <input
-                  className="form-input"
-                  type="number"
-                  name="existingDebt"
-                  placeholder="0 if none"
-                  value={form.existingDebt}
-                  onChange={handleChange}
-                  style={{
-                    borderColor: validationErrors.existingDebt
-                      ? '#f87171' : undefined
-                  }}
-                />
-                <FieldError field="existingDebt" />
-              </div>
-              <div>
-                <label className="form-label">Loan Purpose *</label>
-                <select
-                  className="form-input"
-                  name="loanPurpose"
-                  value={form.loanPurpose}
-                  onChange={handleChange}
-                  style={{
-                    borderColor: validationErrors.loanPurpose
-                      ? '#f87171' : undefined
-                  }}
-                >
-                  <option value="">Select purpose</option>
-                  <option value="HOME">Home Purchase</option>
-                  <option value="EDUCATION">Education</option>
-                  <option value="VEHICLE">Vehicle</option>
-                  <option value="PERSONAL">Personal</option>
-                  <option value="BUSINESS">Business</option>
-                </select>
-                <FieldError field="loanPurpose" />
-              </div>
+              📧 Your analysis result will be sent to your email address after submission.
             </div>
 
             <button

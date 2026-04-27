@@ -28,6 +28,7 @@ export const loginAdmin = (email, password) =>
 export const submitLoanApplication = (formData) => {
   const convertedData = {
     applicantName: formData.applicantName,
+    applicantEmail: formData.applicantEmail,
     age: formData.age ? parseInt(formData.age) : null,
     gender: formData.gender,
     annualIncome: formData.annualIncome ?
@@ -65,6 +66,7 @@ export const deleteApplication = (id) =>
 export const reAnalyzeApplication = (id, formData) => {
   const convertedData = {
     applicantName: formData.applicantName,
+    applicantEmail: formData.applicantEmail,
     age: formData.age ? parseInt(formData.age) : null,
     gender: formData.gender,
     annualIncome: formData.annualIncome ?
