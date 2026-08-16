@@ -144,6 +144,6 @@ Password: admin123
 
 ## 👨‍💻 Author
 **Swapnil Salunke**
-- LinkedIn: [your-linkedin-url]
-- GitHub: [your-github-url]
+- LinkedIn:https://www.linkedin.com/in/swapnil-salunke-9971712b2/
+- GitHub: https://github.com/swap-13  
 - Email: salunkeswapnil264@gmail.com
